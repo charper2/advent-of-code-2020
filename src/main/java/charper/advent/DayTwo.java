@@ -1,7 +1,9 @@
 package charper.advent;
 
-import java.util.List;
-import static charper.advent.Utils.getIntegers;
+import java.util.Scanner;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 
 public class DayTwo {
     
@@ -33,6 +35,7 @@ public class DayTwo {
                 }
             }
         }
+        scanner.close();
         System.out.println(numValid);
     }
     
@@ -61,6 +64,7 @@ public class DayTwo {
                 }
             }
         }
+        scanner.close();
         System.out.println(numValid);
     }
 
