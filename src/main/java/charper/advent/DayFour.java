@@ -10,7 +10,7 @@ public class DayFour {
     public void run() {
         int numValid = 0;
         Scanner scanner = new Scanner(System.in);
-        scanner.useDelimiter(Pattern.compile("^\\s*$", Pattern.MULTILINE));;
+        scanner.useDelimiter(Pattern.compile("^\\s*$", Pattern.MULTILINE));
         Pattern byr = Pattern.compile("(?:^|\\s)byr:([^\\s]+)(?:\\s|$)");
         Pattern iyr = Pattern.compile("(?:^|\\s)iyr:([^\\s]+)(?:\\s|$)");
         Pattern eyr = Pattern.compile("(?:^|\\s)eyr:([^\\s]+)(?:\\s|$)");
