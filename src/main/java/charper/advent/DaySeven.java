@@ -13,12 +13,18 @@ import java.util.regex.Pattern;
 public class DaySeven {
     private static final String SHINY_GOLD = "shiny gold";
 
+    // This maps all bags to those that can contain it.
+    Map<String, Set<String>> outerBagMap = new HashMap<>();
+
+    // This maps all bags to a all bags that are contained inside it. Bags contained
+    // inside are included as a BagPair, containing the number of bags and the type.
+    Map<String, Set<BagPair>> innerBagMap = new HashMap<>();
+
     public DaySeven() {
         run2();
     }
 
     public void run() {
-        Map<String, Set<String>> bagMap = new HashMap<>();
         int numValid = 0;
         try {
             File input = new File("C:\\Users\\Caity\\code\\advent-of-code-2020\\src\\main\\java\\charper\\advent\\DaySevenInput.txt");
@@ -37,14 +43,14 @@ public class DaySeven {
                     Matcher matcher = pattern.matcher(bag);
                     if (matcher.find()) {
                         String innerBag = matcher.group(1).trim();
-                        if (bagMap.get(innerBag) != null) {
-                            Set<String> types = bagMap.get(innerBag);
+                        if (outerBagMap.get(innerBag) != null) {
+                            Set<String> types = outerBagMap.get(innerBag);
                             types.add(outerBag);
-                            bagMap.put(innerBag, types);
+                            outerBagMap.put(innerBag, types);
                         } else {
                             Set<String> types = new HashSet<>();
                             types.add(outerBag);
-                            bagMap.put(innerBag, types);
+                            outerBagMap.put(innerBag, types);
                         }
                         if (innerBag.equals(SHINY_GOLD)) {
                             directlyContainingShinyGold.add(outerBag);
@@ -56,7 +62,7 @@ public class DaySeven {
             // recursively check to see what bags contain the bags that directly contain shiny gold
             Set<String> canContainShinyGold = new HashSet<>(directlyContainingShinyGold);
             for (String bag : directlyContainingShinyGold) {
-                canContainShinyGold.addAll(getOuterBags(bagMap, bag));
+                canContainShinyGold.addAll(getOuterBags(bag));
             }
             numValid += canContainShinyGold.size();
 
@@ -67,19 +73,7 @@ public class DaySeven {
         }
     }
 
-    private Set<String> getOuterBags(Map<String, Set<String>> bagMap, final String bag) {
-        Set<String> outerBags = new HashSet<>();
-        if (bagMap.get(bag) != null) {
-            outerBags.addAll(bagMap.get(bag));
-            for (String outerBag : bagMap.get(bag)) {
-                outerBags.addAll(getOuterBags(bagMap, outerBag));
-            }
-        }
-        return outerBags;
-    }
-
     public void run2() {
-        Map<String, Set<BagPair>> bagMap = new HashMap<>();
         int numValid = 0;
         try {
             File input = new File("C:\\Users\\Caity\\code\\advent-of-code-2020\\src\\main\\java\\charper\\advent\\DaySevenInput.txt");
@@ -102,12 +96,12 @@ public class DaySeven {
                         innerBags.add(new BagPair(innerBag, numBags));
                     }
                 }
-                bagMap.put(outerBag, innerBags);
+                innerBagMap.put(outerBag, innerBags);
             }
 
             // recursively get all bags in bags
-            for (BagPair bag : bagMap.get(SHINY_GOLD)) {
-                numValid += bag.getNumBags() + (bag.getNumBags() * getNumberBags(bagMap, bag.getBagType()));
+            for (BagPair bag : innerBagMap.get(SHINY_GOLD)) {
+                numValid += bag.getNumBags() + (bag.getNumBags() * getNumberBags(bag.getBagType()));
             }
 
             System.out.println(numValid);
@@ -116,12 +110,23 @@ public class DaySeven {
             System.out.println("oops no file here...");
         }
     }
+    
+    private Set<String> getOuterBags(final String bag) {
+        Set<String> outerBags = new HashSet<>();
+        if (outerBagMap.get(bag) != null) {
+            outerBags.addAll(outerBagMap.get(bag));
+            for (String outerBag : outerBagMap.get(bag)) {
+                outerBags.addAll(getOuterBags(outerBag));
+            }
+        }
+        return outerBags;
+    }
 
-    private int getNumberBags(Map<String, Set<BagPair>> bagMap, final String bag) {
+    private int getNumberBags(final String bag) {
         int numBags = 0;
-        if (bagMap.get(bag) != null) {
-            for (BagPair innerBag : bagMap.get(bag)) {
-                numBags += innerBag.getNumBags() + (innerBag.getNumBags() * getNumberBags(bagMap, innerBag.getBagType()));
+        if (innerBagMap.get(bag) != null) {
+            for (BagPair innerBag : innerBagMap.get(bag)) {
+                numBags += innerBag.getNumBags() + (innerBag.getNumBags() * getNumberBags(innerBag.getBagType()));
             }
         }
         return numBags;

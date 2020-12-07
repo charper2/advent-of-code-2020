@@ -6,6 +6,10 @@ import java.util.Scanner;
 
 public class DayThree {
 
+    public DayThree() {
+        run2();
+    }
+
     public void run2() {
         List<String> treeLocations = getLocations();
         long numHits = run(1, 1, treeLocations) *
