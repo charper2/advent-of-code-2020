@@ -1,14 +1,13 @@
 package charper.advent;
 
-import java.io.File;
-import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Scanner;
 import java.util.Set;
+import static charper.advent.Utils.getLinesFromFile;
 
 public class DayEight {
+    private static final String FILE_PATH = "C:\\Users\\Caity\\code\\advent-of-code-2020\\src\\main\\java\\charper\\advent\\DayEightInput.txt";
 
     public DayEight() {
         run2();
@@ -16,7 +15,7 @@ public class DayEight {
 
     public void run() {
         long acc = 0;
-        List<String> instructions = getInstructions();
+        List<String> instructions = getLinesFromFile(FILE_PATH);
         Set<Integer> pastLocations = new HashSet<>();
         int location = 0;
         while (true) {
@@ -45,7 +44,7 @@ public class DayEight {
 
     public void run2() {
         long acc = 0;
-        List<String> instructions = getInstructions();
+        List<String> instructions = getLinesFromFile(FILE_PATH);
         List<Integer> pastLocations = new ArrayList<>();
         int location = 0;
         int instToChange = 0;
@@ -92,21 +91,4 @@ public class DayEight {
         System.out.println(acc);
     }
 
-    private List<String> getInstructions() {
-        List<String> instructions = new ArrayList<>();
-        try {
-            File input = new File("C:\\Users\\Caity\\code\\advent-of-code-2020\\src\\main\\java\\charper\\advent\\DayEightInput.txt");
-            Scanner scanner = new Scanner(input);
-
-            while(scanner.hasNext()) {
-                String instruction = scanner.nextLine();
-                instructions.add(instruction);
-            }
-            scanner.close();
-        } catch (FileNotFoundException exception) {
-            System.out.println("oops no file here...");
-        }
-        return instructions;
-    }
-    
 }
