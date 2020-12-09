@@ -19,42 +19,33 @@ public class DayFour {
             File input = new File("C:\\Users\\Caity\\code\\advent-of-code-2020\\src\\main\\java\\charper\\advent\\DayFourInput.txt");
             Scanner scanner = new Scanner(input);
             scanner.useDelimiter(Pattern.compile("^\\s*$", Pattern.MULTILINE));
-            Pattern byr = Pattern.compile("(?:^|\\s)byr:([^\\s]+)(?:\\s|$)");
-            Pattern iyr = Pattern.compile("(?:^|\\s)iyr:([^\\s]+)(?:\\s|$)");
-            Pattern eyr = Pattern.compile("(?:^|\\s)eyr:([^\\s]+)(?:\\s|$)");
-            Pattern hgt = Pattern.compile("(?:^|\\s)hgt:([^\\s]+)(?:\\s|$)");
-            Pattern hcl = Pattern.compile("(?:^|\\s)hcl:([^\\s]+)(?:\\s|$)");
-            Pattern ecl = Pattern.compile("(?:^|\\s)ecl:([^\\s]+)(?:\\s|$)");
-            Pattern pid = Pattern.compile("(?:^|\\s)pid:([^\\s]+)(?:\\s|$)");
-            // Pattern cid = Pattern.compile("(?:^|\\s)cid:([^\\s]+)(?:\\s|$)");
-
             while(scanner.hasNext()) {
                 String str = scanner.next();
-                if (!isBirthYearValid(byr, str)) {
+                if (!isBirthYearValid(str)) {
                     continue;
                 }
 
-                if (!isIssueYearValid(iyr, str)) {
+                if (!isIssueYearValid(str)) {
                     continue;
                 }
 
-                if (!isExpirationYearValid(eyr, str)) {
+                if (!isExpirationYearValid(str)) {
                     continue;
                 }
                 
-                if (!isHeightValid(hgt, str)) {
+                if (!isHeightValid(str)) {
                     continue;
                 }
 
-                if (!isHairColourValid(hcl, str)) {
+                if (!isHairColourValid(str)) {
                     continue;
                 }
 
-                if (!isEyeColourValid(ecl, str)) {
+                if (!isEyeColourValid(str)) {
                     continue;
                 }
 
-                if (!isPassportIDValid(pid, str)) {
+                if (!isPassportIDValid(str)) {
                     continue;
                 }
 
@@ -67,8 +58,9 @@ public class DayFour {
         System.out.println(numValid);
     }
 
-    private boolean isBirthYearValid(Pattern pattern, String str) {
-        Matcher mByr = pattern.matcher(str);
+    private boolean isBirthYearValid(String str) {
+        Pattern byr = Pattern.compile("(?:^|\\s)byr:([^\\s]+)(?:\\s|$)");
+        Matcher mByr = byr.matcher(str);
         if (mByr.find()) {
             int birthYear = Integer.parseInt(mByr.group(1));
             if (birthYear >= 1920 || birthYear <= 2002) {
@@ -78,8 +70,9 @@ public class DayFour {
         return false;
     }
 
-    private boolean isIssueYearValid(Pattern pattern, String str) {
-        Matcher mIyr = pattern.matcher(str);
+    private boolean isIssueYearValid(String str) {
+        Pattern iyr = Pattern.compile("(?:^|\\s)iyr:([^\\s]+)(?:\\s|$)");
+        Matcher mIyr = iyr.matcher(str);
         if (mIyr.find()) {
             int match = Integer.parseInt(mIyr.group(1));
             if (match >= 2010 || match <= 2020) {
@@ -89,8 +82,9 @@ public class DayFour {
         return false;
     }
 
-    private boolean isExpirationYearValid(Pattern pattern, String str) {
-        Matcher mEyr = pattern.matcher(str);
+    private boolean isExpirationYearValid(String str) {
+        Pattern eyr = Pattern.compile("(?:^|\\s)eyr:([^\\s]+)(?:\\s|$)");
+        Matcher mEyr = eyr.matcher(str);
         if (mEyr.find()) {
             int match = Integer.parseInt(mEyr.group(1));
             if (match >= 2020 || match <= 2030) {
@@ -100,8 +94,9 @@ public class DayFour {
         return false;
     }
 
-    private boolean isHeightValid(Pattern pattern, String str) {
-        Matcher mHgt = pattern.matcher(str);
+    private boolean isHeightValid(String str) {
+        Pattern hgt = Pattern.compile("(?:^|\\s)hgt:([^\\s]+)(?:\\s|$)");
+        Matcher mHgt = hgt.matcher(str);
         if (mHgt.find()) {
             String heightStr = mHgt.group(1);
             Pattern heightValidation = Pattern.compile("(.*)(cm|in)");
@@ -119,8 +114,9 @@ public class DayFour {
         return false;
     }
 
-    private boolean isHairColourValid(Pattern pattern, String str) {
-        Matcher mHcl = pattern.matcher(str);
+    private boolean isHairColourValid(String str) {
+        Pattern hcl = Pattern.compile("(?:^|\\s)hcl:([^\\s]+)(?:\\s|$)");
+        Matcher mHcl = hcl.matcher(str);
         if (mHcl.find()) {
             String hclMatch = mHcl.group(1);
             if (hclMatch.length() != 7 || hclMatch.charAt(0) != '#') {
@@ -135,8 +131,9 @@ public class DayFour {
         return false;
     }
 
-    private boolean isEyeColourValid(Pattern pattern, String str) {
-        Matcher mEcl = pattern.matcher(str);
+    private boolean isEyeColourValid(String str) {
+        Pattern ecl = Pattern.compile("(?:^|\\s)ecl:([^\\s]+)(?:\\s|$)");
+        Matcher mEcl = ecl.matcher(str);
         if (mEcl.find()) {
             String eclMatch = mEcl.group(1);
             Pattern eclValidation = Pattern.compile("^(?:amb|blu|brn|gry|grn|hzl|oth)$");
@@ -148,8 +145,9 @@ public class DayFour {
         return false;
     }
 
-    private boolean isPassportIDValid(Pattern pattern, String str) {
-        Matcher mPid = pattern.matcher(str);
+    private boolean isPassportIDValid(String str) {
+        Pattern pid = Pattern.compile("(?:^|\\s)pid:([^\\s]+)(?:\\s|$)");
+        Matcher mPid = pid.matcher(str);
         if (mPid.find()) {
             String pidMatch = mPid.group(1);
             Pattern pidValidation = Pattern.compile("^\\d{9}");
