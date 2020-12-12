@@ -30,13 +30,11 @@ public class DayNine {
     }
 
     public Long run2(final List<Long> numbers, final Long required) {
-        System.out.println(required);
-        for (int i = 0; i < numbers.size() - 1; i++) {
-            for (int j = i+1; j < numbers.size(); j++) {
-                List<Long> slice = numbers.subList(i, j+1);
+        for (int i = 0; i < numbers.size(); i++) {
+            for (int j = i+1; j <= numbers.size(); j++) {
+                List<Long> slice = numbers.subList(i, j);
                 Long sum = slice.stream().collect(Collectors.summingLong(Long::longValue));
-                System.out.println(sum);
-                if (sum == required) {
+                if (sum.equals(required)) {
                     return getSumOfMaxMinInRange(slice);
                 } else if (sum > required) {
                     break;
