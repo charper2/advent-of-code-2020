@@ -1,15 +1,18 @@
 package charper.advent;
 
 import java.util.ArrayDeque;
+import java.util.ArrayList;
 import java.util.Deque;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Scanner;
+import java.util.stream.Collectors;
 import static charper.advent.Utils.getCharList;
 
 public class DayEighteen {
-    private static String FILE_PATH = "C:\\Users\\Caity\\code\\advent-of-code-2020\\src\\main\\java\\charper\\advent\\DayEighteenInput.txt";
-    private static Map<Character, Integer> PRECEDENCE = new HashMap<>() {
+    private static final String FILE_PATH = "C:\\Users\\Caity\\code\\advent-of-code-2020\\src\\main\\java\\charper\\advent\\DayEighteenInput.txt";
+    private static final Map<Character, Integer> PRECEDENCE = new HashMap<>() {
         {
             put('+', 1);
             put('*', 0);
