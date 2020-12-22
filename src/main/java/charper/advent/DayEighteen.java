@@ -2,17 +2,25 @@ package charper.advent;
 
 import java.util.ArrayDeque;
 import java.util.Deque;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import static charper.advent.Utils.getCharList;
 
 public class DayEighteen {
     private static String FILE_PATH = "C:\\Users\\Caity\\code\\advent-of-code-2020\\src\\main\\java\\charper\\advent\\DayEighteenInput.txt";
+    private static Map<Character, Integer> PRECEDENCE = new HashMap<>() {
+        {
+            put('+', 1);
+            put('*', 0);
+        }
+    };
     
     public DayEighteen() {
         System.out.println(run(FILE_PATH));
     }
 
-    public Long run(String filePath) {
+    private Long run(String filePath) {
         List<List<Character>> problems = getCharList(filePath);
         Long total = 0L;
         for (List<Character> problem: problems) {
@@ -20,70 +28,83 @@ public class DayEighteen {
         }
         return total;
     }
-
+    
     private static Long evaluateProblem(List<Character> problem) {
-        int numStartBrackets = 0;
-        int numEndBrackets = 0;
-        Long currentValue = null;
-        Integer startBracketIndex = null;
-        Character lastOperation = null;
-        // Deque<Character> stack = new ArrayDeque<Character>();
-        // for (int i = 0; i < problem.size(); i++) {
-        //     stack.push(problem.get(i));
-        // }
-        // Character c = stack.pop();
-
-        for (int i = 0; i < problem.size(); i++) {
-            Character c = problem.get(i);
-            if (startBracketIndex == null) {
-                if (Character.isWhitespace(c)) {
-                    continue;
-                }
-                else if (isMathOperation(c)) {
-                    lastOperation = c;
-                }
-                else if (Character.isDigit(c)) {
-                    Long numeric = (long)Character.getNumericValue(c);
-                    if (currentValue == null) {
-                        currentValue = numeric;
+        List<Character> rpn = convertInfixToRpn(problem);
+        return evaluateRPN(rpn);
+    }
+    
+    private static List<Character> convertInfixToRpn(List<Character> infixInput) {
+        List<Character> rpnOutput = new ArrayList<>();
+        Deque<Character> stack = new ArrayDeque<>();
+        
+        for (Character c : infixInput) {
+            if (isMathOperation(c)) {
+                // While stack not empty AND stack top element 
+                // is an operator
+                while (!stack.isEmpty() && isMathOperation(stack.peek())) {                   
+                    // if c has higher precedence than the top of the stack
+                    // then add it to the output
+                    if (comparePrecedence(c, stack.peek()) <= 0) {
+                        rpnOutput.add(stack.pop());   
+                        continue;
                     }
-                    else if (isAddition(lastOperation)) {
-                        return
-                    }
-                    // else if (isProduct(lastOperation)) {
-                    //     currentValue *= numeric;
-                    // }
+                    break;
                 }
-                else if (isStartBracket(c)) {
-                    startBracketIndex = i;
-                    numStartBrackets++;
-                }
-            }            
+                // Push the new operator on the stack
+                stack.push(c);
+            }
             else if (isStartBracket(c)) {
-                numStartBrackets++;
+                stack.push(c);
             } 
-            else if (isEndBracket(c)) {
-                numEndBrackets++;
-                if (numEndBrackets == numStartBrackets) {
-                    List<Character> innerProblem = problem.subList(startBracketIndex+1, i);
-                    if (lastOperation == null) {
-                        currentValue = evaluateProblem(innerProblem);
-                    }
-                    else if (isAddition(lastOperation)) {
-                        currentValue += evaluateProblem(innerProblem);
-                    }
-                    else if (isProduct(lastOperation)) {
-                        currentValue *= evaluateProblem(innerProblem);
-                    }
-                    startBracketIndex = null;
-                    numEndBrackets = 0;
-                    numStartBrackets = 0;
+            else if (isEndBracket(c)) {                
+                while (!stack.isEmpty() && !isStartBracket(stack.peek())) 
+                {
+                    rpnOutput.add(stack.pop()); 
                 }
+                stack.pop(); 
+            } 
+            // If token is a number
+            else {
+                rpnOutput.add(c); 
             }
         }
-        return currentValue;        
+        while (!stack.isEmpty()) {
+            rpnOutput.add(stack.pop()); 
+        }
+        return rpnOutput;
     }
-
+    
+    private static int comparePrecedence(Character operand1, Character operand2) {
+        if (!isMathOperation(operand1) || !isMathOperation(operand2)) {
+            throw new IllegalArgumentException("Invalid tokens: " + operand1
+                    + " " + operand2);
+        }
+        return PRECEDENCE.get(operand1) - PRECEDENCE.get(operand2);
+    }
+    
+    private static long evaluateRPN(List<Character> problem) {
+        Deque<String> stack = new ArrayDeque<>();
+         
+        for (Character c : problem) {
+            if (!isMathOperation(c)) {
+                stack.push(Character.toString(c));                
+            }
+            else {
+                long val1 = Long.valueOf(stack.pop());
+                long val2 = Long.valueOf(stack.pop());
+                 
+                if (isAddition(c)) {
+                    stack.push(Long.toString(val1 + val2));
+                }            
+                else if (isProduct(c)) {
+                    stack.push(Long.toString(val1 * val2));
+                }                                             
+            }                        
+        }        
+        return Long.valueOf(stack.pop());
+    }
+    
     private static boolean isStartBracket(Character c) {
         return c.equals('(');
     }
@@ -103,5 +124,4 @@ public class DayEighteen {
     private static boolean isMathOperation(Character c) {
         return isAddition(c) || isProduct(c);
     }
-    
 }
