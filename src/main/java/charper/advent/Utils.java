@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
+import java.util.stream.Collectors;
 
 public class Utils {
     
@@ -61,6 +62,25 @@ public class Utils {
             while(scanner.hasNext()) {
                 String instruction = scanner.nextLine();
                 lines.add(instruction);
+            }
+            scanner.close();
+        } catch (FileNotFoundException exception) {
+            System.out.println("oops no file here...");
+        }
+        return lines;
+    }
+
+    public static List<List<Character>> getCharList(String filePath) {
+        List<List<Character>> lines = new ArrayList<>();
+        try {
+            File input = new File(filePath);
+            Scanner scanner = new Scanner(input);
+
+            while(scanner.hasNext()) {
+                String str = scanner.nextLine();
+                str = str.replace(" ", "");
+                List<Character> chars = str.chars().mapToObj(e -> (char)e).collect(Collectors.toList());
+                lines.add(chars);
             }
             scanner.close();
         } catch (FileNotFoundException exception) {

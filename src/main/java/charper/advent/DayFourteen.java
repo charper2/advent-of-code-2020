@@ -16,7 +16,7 @@ public class DayFourteen {
     
     
     public DayFourteen() {
-        // System.out.println(run(FILE_PATH));
+        System.out.println(run(FILE_PATH));
         System.out.println(run2(FILE_PATH));
     }
 

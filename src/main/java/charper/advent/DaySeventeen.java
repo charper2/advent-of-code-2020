@@ -16,52 +16,75 @@ public class DaySeventeen {
     }
 
     public void run() {
-        Map<Integer, Map<Integer, Map<Integer, Region>>> cube = new HashMap<>();
-        cube.put(0, getSlice(FILE_PATH));
+        Map<Integer, Map<Integer, Map<Integer, Map<Integer, Region>>>> cube = new HashMap<>();
+        Map<Integer, Map<Integer, Map<Integer, Region>>> zSlice = new HashMap<>();
+        zSlice.put(0, getSlice(FILE_PATH));
+        cube.put(0, zSlice);
         for (int i = 1; i <= 6; i++) {
             cube = cycle(cube, i);
         }
     }
 
-    public Map<Integer, Map<Integer, Map<Integer, Region>>> cycle(Map<Integer, Map<Integer, Map<Integer, Region>>> cube, int cycle) {
+    public Map<Integer, Map<Integer, Map<Integer, Map<Integer, Region>>>> cycle(
+        Map<Integer, Map<Integer, Map<Integer, Map<Integer, Region>>>> cube,
+         int cycle
+    ) {
         int numActive = 0;
-        int zSize = cube.entrySet().size();
-        int ySize = cube.get(0).entrySet().size();
-        int xSize = cube.get(0).get(0).entrySet().size();
-        Map<Integer, Map<Integer, Map<Integer, Region>>> nextState = new HashMap<>();
+        int wSize = cube.entrySet().size();
+        int zSize = cube.get(0).entrySet().size();
+        int ySize = cube.get(0).get(0).entrySet().size();
+        int xSize = cube.get(0).get(0).get(0).entrySet().size();
+        Map<Integer, Map<Integer, Map<Integer, Map<Integer, Region>>>> nextState = new HashMap<>();
 
-        for (int i = -1*cycle; i < zSize + cycle; i++) {
-            Map<Integer, Map<Integer, Region>> zSlice = nextState.get(i);
-            if (zSlice == null) {
-                zSlice = new HashMap<>();
+        for (int h = -1*cycle; h < wSize + cycle; h++) {
+            Map<Integer, Map<Integer, Map<Integer, Region>>> wSlice = nextState.get(h);
+            if (wSlice == null) {
+                wSlice = new HashMap<>();
             }
-            for (int j = -1*cycle; j < ySize + cycle; j++) {
-                Map<Integer, Region> ySlice = zSlice.get(j);
-                if (ySlice == null) {
-                    ySlice = new HashMap<>();
+            for (int i = -1*cycle; i < zSize + cycle; i++) {
+                Map<Integer, Map<Integer, Region>> zSlice = wSlice.get(i);
+                if (zSlice == null) {
+                    zSlice = new HashMap<>();
                 }
-                for (int k = -1*cycle; k < xSize + cycle; k++) {
-                    Region cubeVal = getCurrentValue(cube, i, j, k);  
-                    Region nextVal = new Region('.');                 
-                    int active = numberAdjacentActive(cube, i, j, k);
-                    if ((cubeVal.isActive() && (active == 2 || active == 3)) ||
-                        ((!cubeVal.isActive()) && active == 3)) {
-                        nextVal.setActive();
-                        numActive++;
+                for (int j = -1*cycle; j < ySize + cycle; j++) {
+                    Map<Integer, Region> ySlice = zSlice.get(j);
+                    if (ySlice == null) {
+                        ySlice = new HashMap<>();
                     }
-                    ySlice.put(k, nextVal);
+                    for (int k = -1*cycle; k < xSize + cycle; k++) {
+                        Region cubeVal = getCurrentValue(cube, h, i, j, k);  
+                        Region nextVal = new Region('.');                 
+                        int active = numberAdjacentActive(cube, h, i, j, k);
+                        if ((cubeVal.isActive() && (active == 2 || active == 3)) ||
+                            ((!cubeVal.isActive()) && active == 3)) {
+                            nextVal.setActive();
+                            numActive++;
+                        }
+                        ySlice.put(k, nextVal);
+                    }
+                    zSlice.put(j, ySlice);
                 }
-                zSlice.put(j, ySlice);
+                wSlice.put(i, zSlice);
             }
-            nextState.put(i, zSlice);
+            nextState.put(h, wSlice);
         }
         System.out.println(numActive);
         // System.out.println(nextState.get(0));
         return nextState;
     }
     
-    private Region getCurrentValue(Map<Integer, Map<Integer, Map<Integer, Region>>> cube, int z, int y, int x) {
-        Map<Integer, Map<Integer, Region>> zSlice = cube.get(z);
+    private Region getCurrentValue(
+        Map<Integer, Map<Integer, Map<Integer, Map<Integer, Region>>>> cube,
+        int w,
+        int z,
+        int y,
+        int x
+    ) {
+        Map<Integer, Map<Integer, Map<Integer, Region>>> wSlice = cube.get(w);
+        if (wSlice == null) {
+            return new Region('.');
+        }
+        Map<Integer, Map<Integer, Region>> zSlice = wSlice.get(z);
         if (zSlice == null) {
             return new Region('.');
         }
@@ -77,30 +100,42 @@ public class DaySeventeen {
     }
  
     // return number of directly active regions.
-    private int numberAdjacentActive(Map<Integer, Map<Integer, Map<Integer, Region>>> cube, int z, int y, int x) {
+    private int numberAdjacentActive(
+        Map<Integer, Map<Integer, Map<Integer, Map<Integer, Region>>>> cube,
+        int w,
+        int z,
+        int y,
+        int x
+    ) {
         int active = 0;
-        for (int i = z-1; i <= z+1; i++) {
-            Map<Integer, Map<Integer, Region>> zSlice = cube.get(i);
-            if (zSlice == null) {
+        for (int h = w-1; h <= w+1; h++) {
+            Map<Integer, Map<Integer, Map<Integer, Region>>> wSlice = cube.get(h);
+            if (wSlice == null) {
                 continue;
             }
-            for (int j = y-1; j <= y+1; j++) {
-                Map<Integer, Region> ySlice = zSlice.get(j);
-                if (ySlice == null) {
+            for (int i = z-1; i <= z+1; i++) {
+                Map<Integer, Map<Integer, Region>> zSlice = wSlice.get(i);
+                if (zSlice == null) {
                     continue;
                 }
-                for (int k = x-1; k <= x+1; k++) {
-                    if (i == z && j == y && k == x) {
+                for (int j = y-1; j <= y+1; j++) {
+                    Map<Integer, Region> ySlice = zSlice.get(j);
+                    if (ySlice == null) {
                         continue;
                     }
-                    Region xSlice = ySlice.get(k);
-                    if (xSlice == null) {
-                        continue;
-                    } 
-                    if (xSlice.isActive()) {
-                        active++;
-                        if (active > 3) {
-                            return active;
+                    for (int k = x-1; k <= x+1; k++) {
+                        if (h == w && i == z && j == y && k == x) {
+                            continue;
+                        }
+                        Region xSlice = ySlice.get(k);
+                        if (xSlice == null) {
+                            continue;
+                        } 
+                        if (xSlice.isActive()) {
+                            active++;
+                            if (active > 3) {
+                                return active;
+                            }
                         }
                     }
                 }
